@@ -85,7 +85,7 @@ class _HeroLeft extends StatelessWidget {
               Text('🌾', style: TextStyle(fontSize: 13)),
               SizedBox(width: 6),
               Text(
-                'Agricultural Revolution',
+                'Plateforme POS Agricole',
                 style: TextStyle(
                   color: AppTheme.primaryGreen,
                   fontSize: 12,
@@ -99,7 +99,7 @@ class _HeroLeft extends StatelessWidget {
         Builder(builder: (ctx) {
           final fs = Responsive.isMobile(ctx) ? 28.0 : Responsive.isTablet(ctx) ? 34.0 : 42.0;
           return Text(
-            'Connecting Farmers\nDirectly to Buyers',
+            'Achetez vos produits\nagricoles simplement',
             style: TextStyle(
               fontSize: fs,
               fontWeight: FontWeight.w800,
@@ -110,8 +110,8 @@ class _HeroLeft extends StatelessWidget {
         }),
         const SizedBox(height: 16),
         const Text(
-          'FarmBridge eliminates middlemen, ensuring farmers get fair prices\n'
-          'and buyers receive fresh produce directly from the source.',
+          'Enregistrez vos achats auprès des agriculteurs, gérez les crédits,\n'
+          'suivez les dettes et pilotez vos remboursements en un seul endroit.',
           style: TextStyle(
             fontSize: 15,
             color: AppTheme.mutedFg,
@@ -124,13 +124,13 @@ class _HeroLeft extends StatelessWidget {
           runSpacing: 12,
           children: [
             _HeroButton(
-              label: 'Explore Marketplace',
+              label: 'Nouvelle vente',
               primary: true,
               icon: Icons.storefront_outlined,
               onTap: (ctx) => ctx.go('/products'),
             ),
             _HeroButton(
-              label: 'Manage Farmers',
+              label: 'Voir les agriculteurs',
               primary: false,
               icon: Icons.people_outline,
               onTap: (ctx) => ctx.go('/farmers'),
@@ -143,11 +143,11 @@ class _HeroLeft extends StatelessWidget {
           spacing: 20,
           runSpacing: 8,
           children: const [
-            _TrustItem(icon: Icons.security_outlined, label: 'Secure Payments'),
+            _TrustItem(icon: Icons.security_outlined, label: 'Paiements sécurisés'),
             _TrustItem(
-                icon: Icons.support_agent_outlined, label: '24/7 Support'),
+                icon: Icons.account_balance_wallet_outlined, label: 'Crédit contrôlé'),
             _TrustItem(
-                icon: Icons.verified_outlined, label: 'Verified Farmers'),
+                icon: Icons.verified_outlined, label: 'Agriculteurs vérifiés'),
           ],
         ),
       ],
@@ -269,7 +269,7 @@ class _HeroRight extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     const Text(
-                      'Live Transactions',
+                      'Achats enregistrés',
                       style: TextStyle(
                           fontSize: 11,
                           color: AppTheme.mutedFg,
@@ -287,7 +287,7 @@ class _HeroRight extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  'Total Transactions',
+                  'Volume total traité',
                   style: TextStyle(
                       fontSize: 11, color: AppTheme.mutedFg),
                 ),
@@ -317,9 +317,9 @@ class _StatsBanner extends StatelessWidget {
         runSpacing: 24,
         spacing: 48,
         children: const [
-          _StatItem(value: '50,000+', label: 'Registered Farmers'),
-          _StatItem(value: '100,000+', label: 'Crops Listed'),
-          _StatItem(value: '30,000+', label: 'Orders Completed'),
+          _StatItem(value: '500+', label: 'Agriculteurs enregistrés'),
+          _StatItem(value: '1 200+', label: 'Produits disponibles'),
+          _StatItem(value: '8 500+', label: 'Achats complétés'),
         ],
       ),
     );
@@ -366,24 +366,24 @@ class _FeaturesSection extends StatelessWidget {
 
   static const _features = [
     (
-      Icons.link_outlined,
-      'Direct Transactions',
-      'Connect farmers and buyers without intermediaries, ensuring maximum profit for growers.'
+      Icons.point_of_sale_outlined,
+      'Caisse POS intégrée',
+      'Sélectionnez les produits, choisissez le mode de paiement (espèces ou crédit) et validez l\'achat en quelques secondes.'
     ),
     (
-      Icons.auto_graph_outlined,
-      'AI Smart Pricing',
-      'Real-time AI-powered market pricing to ensure competitive and fair rates for all parties.'
+      Icons.account_balance_wallet_outlined,
+      'Gestion du crédit',
+      'Définissez une limite de crédit par agriculteur. Le système bloque automatiquement toute transaction qui dépasse le plafond autorisé.'
     ),
     (
-      Icons.public_outlined,
-      'Nationwide Marketplace',
-      'Access buyers and sellers across India with a comprehensive pan-India trading network.'
+      Icons.receipt_long_outlined,
+      'Suivi des transactions',
+      'Consultez l\'historique complet de tous les achats et remboursements, avec le profil de l\'opérateur qui a effectué chaque opération.'
     ),
     (
-      Icons.translate_outlined,
-      'Multi-Language Support',
-      'Platform available in multiple regional languages for inclusive and accessible usage.'
+      Icons.agriculture_outlined,
+      'Remboursements en nature',
+      'Enregistrez les remboursements de dettes via les récoltes : produit, quantité en kg, taux au kg et crédit calculé automatiquement.'
     ),
   ];
 
@@ -396,7 +396,7 @@ class _FeaturesSection extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            'Everything You Need',
+            'Tout ce dont vous avez besoin',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -405,7 +405,7 @@ class _FeaturesSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Powerful features to streamline agricultural commerce',
+            'Des outils pensés pour la gestion des achats agricoles au quotidien',
             style: TextStyle(color: AppTheme.mutedFg, fontSize: 15),
           ),
           const SizedBox(height: 40),
@@ -508,7 +508,7 @@ class _CtaCard extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Ready to Transform Agriculture?',
+              'Prêt à enregistrer une vente ?',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -518,7 +518,7 @@ class _CtaCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Join thousands of farmers and buyers already benefiting\nfrom direct market access.',
+              'Sélectionnez un agriculteur, choisissez les produits et finalisez\nl\'achat en espèces ou à crédit en quelques clics.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70, fontSize: 15, height: 1.6),
             ),
@@ -538,7 +538,7 @@ class _CtaCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: () => context.go('/products'),
-                  child: const Text('Start Selling',
+                  child: const Text('Nouvelle vente',
                       style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
                 OutlinedButton(
@@ -551,7 +551,7 @@ class _CtaCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: () => context.go('/farmers'),
-                  child: const Text('Learn More',
+                  child: const Text('Voir les agriculteurs',
                       style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
               ],
@@ -604,14 +604,14 @@ class _Footer extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Connecting farmers directly to buyers across India.',
+            'Gestion des achats de produits agricoles en Côte d\'Ivoire.',
             style: TextStyle(color: Colors.white54, fontSize: 13),
           ),
           const SizedBox(height: 20),
           const Divider(color: Colors.white12),
           const SizedBox(height: 12),
           const Text(
-            '© 2025 FarmBridge. All rights reserved.',
+            '© 2026 FarmBridge. Tous droits réservés.',
             style: TextStyle(color: Colors.white38, fontSize: 12),
           ),
         ],
