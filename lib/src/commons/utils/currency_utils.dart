@@ -11,4 +11,14 @@ class CurrencyUtils {
 
   /// Formate sans suffixe : "12 500"
   static String formatRaw(double amount) => _fcfaFormat.format(amount);
+
+  /// Formate de façon compacte : "1,2M FCFA", "50K FCFA", etc.
+  static String formatCompact(double amount) {
+    if (amount >= 1000000) {
+      return '${(amount / 1000000).toStringAsFixed(1)}M FCFA';
+    } else if (amount >= 1000) {
+      return '${(amount / 1000).toStringAsFixed(0)}K FCFA';
+    }
+    return format(amount);
+  }
 }

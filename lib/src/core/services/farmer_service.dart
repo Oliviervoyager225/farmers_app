@@ -62,7 +62,37 @@ class FarmerService {
   Future<FarmerDebtSummary> getDebtSummary(int farmerId) async {
     try {
       final response = await _client.get(ApiEndpoints.farmerDebts(farmerId));
-      return FarmerDebtSummary.fromJson(response.data as Map<String, dynamic>);
+      return FarmerDebtSummary.fromJson(response.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
+  }
+
+  Future<void> delete(int id) async {
+    try {
+      await _client.delete(ApiEndpoints.farmerById(id));
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
+  }
+
+  /// Returns {items: List<Farmer>, total: int} with a configurable page size
+  /// for dashboard aggregation without breaking the simple getAll() API.
+  Future<Map<String, dynamic>> getAllRaw({int perPage = 15}) async {
+    try {
+      final response = await _client.get(
+        ApiEndpoints.farmers,
+        params: {'per_page': perPage},
+      );
+      final data = response.data;
+      final list = (data['data'] as List)
+          .map((e) => Farmer.fromJson(e as Map<String, dynamic>))
+          .toList();
+      final meta = data['meta'] as Map<String, dynamic>? ?? {};
+      return {
+        'items': list,
+        'total': (meta['total'] as int?) ?? list.length,
+      };
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
     }

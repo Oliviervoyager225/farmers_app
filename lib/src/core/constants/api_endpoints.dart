@@ -6,7 +6,7 @@ class ApiEndpoints {
   static const String logout = '/auth/logout';
   static const String me = '/auth/me';
 
-  // ─── Users ──────────────────────────────────────────────────────────────────
+  // ─── Users (admin/supervisor) ───────────────────────────────────────────────
   static const String users = '/users';
   static String userById(int id) => '/users/$id';
 
@@ -21,8 +21,8 @@ class ApiEndpoints {
   // ─── Farmers ────────────────────────────────────────────────────────────────
   static const String farmers = '/farmers';
   static String farmerById(int id) => '/farmers/$id';
-  static String farmerSearch(String query) => '/farmers/search?q=$query';
   static String farmerDebts(int farmerId) => '/farmers/$farmerId/debts';
+  static String farmerRepayments(int farmerId) => '/farmers/$farmerId/repayments';
 
   // ─── Transactions ───────────────────────────────────────────────────────────
   static const String transactions = '/transactions';
@@ -30,9 +30,18 @@ class ApiEndpoints {
 
   // ─── Repayments ─────────────────────────────────────────────────────────────
   static const String repayments = '/repayments';
-  static String repaymentsByFarmer(int farmerId) =>
-      '/farmers/$farmerId/repayments';
+  static String repaymentById(int id) => '/repayments/$id';
+
+  // ─── Debts ──────────────────────────────────────────────────────────────────
+  static String debtById(int id) => '/debts/$id';
 
   // ─── Settings ───────────────────────────────────────────────────────────────
   static const String settings = '/settings';
+  static String settingByKey(String key) => '/settings/$key';
+
+  // ─── Notifications ───────────────────────────────────────────────────────────
+  static const String notifications = '/notifications';
+  static const String notificationsUnreadCount = '/notifications/unread-count';
+  static const String notificationsReadAll = '/notifications/read-all';
+  static String notificationMarkRead(String key) => '/notifications/$key/read';
 }

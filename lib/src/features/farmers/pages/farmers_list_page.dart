@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/farmer_provider.dart';
+import '../../../core/permissions/app_permissions.dart';
 import '../../../commons/data/models/farmer.dart';
 import '../../../commons/widgets/widgets.dart';
 import '../../../commons/utils/currency_utils.dart';
@@ -36,6 +38,7 @@ class _FarmersListPageState extends State<FarmersListPage> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<FarmerProvider>();
+    final perms = AppPermissions.from(context.watch<AuthProvider>().user);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -64,21 +67,22 @@ class _FarmersListPageState extends State<FarmersListPage> {
                     ],
                   ),
                 ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryGreen,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                if (perms.canAddFarmer)
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.person_add_outlined, size: 16),
+                    label: const Text('Add Farmer',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600)),
+                    onPressed: () => context.go('/farmers/new'),
                   ),
-                  icon: const Icon(Icons.person_add_outlined, size: 16),
-                  label: const Text('Add Farmer',
-                      style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600)),
-                  onPressed: () => context.go('/farmers/new'),
-                ),
               ],
             ),
           ),
@@ -199,7 +203,7 @@ class _FilterChip extends StatelessWidget {
             const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: active
-              ? AppTheme.primaryGreen.withOpacity(0.1)
+              ? AppTheme.primaryGreen.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
@@ -282,6 +286,11 @@ class _FarmerCard extends StatelessWidget {
 
   Color get _avatarColor => _avatarColors[colorIndex];
 
+  String _specialtyIcon(Farmer f) {
+    if (f.categories.contains('animale')) return '🐄 ';
+    return '🌱 ';
+  }
+
   String get _initials {
     final parts = farmer.fullName.split(' ');
     if (parts.length >= 2) {
@@ -304,7 +313,7 @@ class _FarmerCard extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: AppTheme.primaryGreen.withOpacity(0.12),
+            color: AppTheme.primaryGreen.withValues(alpha: 0.12),
           ),
         ),
         padding: const EdgeInsets.all(20),
@@ -379,15 +388,18 @@ class _FarmerCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             // Specialty tags
-            Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              alignment: WrapAlignment.center,
-              children: [
-                _SpecialtyTag('🌾 Agriculteur'),
-                _SpecialtyTag('🌿 Bio'),
-              ],
-            ),
+            if (farmer.specialties.isNotEmpty)
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                alignment: WrapAlignment.center,
+                children: farmer.specialties
+                    .take(3)
+                    .map((s) => _SpecialtyTag(_specialtyIcon(farmer) + s))
+                    .toList(),
+              )
+            else
+              _SpecialtyTag('🌾 Agriculteur'),
             const Spacer(),
             // Stats row
             Row(
@@ -482,7 +494,7 @@ class _SpecialtyTag extends StatelessWidget {
       padding:
           const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppTheme.primaryGreen.withOpacity(0.08),
+        color: AppTheme.primaryGreen.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(label,
@@ -589,10 +601,16 @@ class _FarmerModal extends StatelessWidget {
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 6,
-                            children: const [
-                              _SpecialtyTag('🌾 Agriculteur'),
-                              _SpecialtyTag('📍 India'),
-                            ],
+                            children: farmer.specialties.isEmpty
+                                ? const [_SpecialtyTag('🌾 Agriculteur')]
+                                : farmer.specialties
+                                    .take(4)
+                                    .map((s) => _SpecialtyTag(
+                                        (farmer.categories.contains('animale')
+                                            ? '🐄 '
+                                            : '🌱 ') +
+                                            s))
+                                    .toList(),
                           ),
                         ],
                       ),

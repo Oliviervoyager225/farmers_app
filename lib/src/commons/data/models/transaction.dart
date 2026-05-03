@@ -30,6 +30,8 @@ class Transaction {
   final int farmerId;
   final String farmerName;
   final int operatorId;
+  final String operatorName;
+  final String operatorRole;
   final List<TransactionItem> items;
   final double subtotal;
   final double interestRate;
@@ -43,6 +45,8 @@ class Transaction {
     required this.farmerId,
     required this.farmerName,
     required this.operatorId,
+    required this.operatorName,
+    required this.operatorRole,
     required this.items,
     required this.subtotal,
     required this.interestRate,
@@ -56,7 +60,9 @@ class Transaction {
         id: json['id'] as int,
         farmerId: json['farmer_id'] as int,
         farmerName: json['farmer_name'] as String? ?? '',
-        operatorId: json['operator_id'] as int,
+        operatorId: json['operator_id'] as int? ?? 0,
+        operatorName: json['operator_name'] as String? ?? '',
+        operatorRole: json['operator_role'] as String? ?? '',
         items: (json['items'] as List<dynamic>? ?? [])
             .map((e) => TransactionItem.fromJson(e as Map<String, dynamic>))
             .toList(),

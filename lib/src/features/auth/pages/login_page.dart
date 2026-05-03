@@ -45,8 +45,17 @@ class _LoginPageState extends State<LoginPage> {
     final auth = context.watch<AuthProvider>();
     final isMobile = Responsive.isMobile(context);
     return Scaffold(
-      backgroundColor: AppTheme.primaryGreen,
-      body: Center(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // ── Couche 1 : image de fond ──────────────────────────────
+          Image.asset(
+            'assets/images/font accueil 3.png',
+            fit: BoxFit.cover,
+          ),
+
+          // ── Couche 2 : bloc de connexion (inchangé) ───────────────
+          Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(isMobile ? 16 : 24),
           child: ConstrainedBox(
@@ -134,7 +143,9 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ),  // ConstrainedBox
         ),
-      ),
+        ),  // Center
+        ],  // Stack children
+      ),  // Stack
     );
   }
 }

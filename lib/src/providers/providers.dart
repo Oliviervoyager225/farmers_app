@@ -3,3 +3,7 @@ export 'farmer_provider.dart';
 export 'product_provider.dart';
 export 'cart_provider.dart';
 export 'settings_provider.dart';
+export 'transaction_provider.dart';
+export 'user_provider.dart';
+export 'notification_provider.dart';
+export 'activity_provider.dart';

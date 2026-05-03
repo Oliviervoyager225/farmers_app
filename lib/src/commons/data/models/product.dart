@@ -21,7 +21,7 @@ class Product {
         id: json['id'] as int,
         name: json['name'] as String,
         description: json['description'] as String?,
-        price: (json['price'] as num).toDouble(),
+        price: ((json['price_fcfa'] ?? json['price'] ?? 0) as num).toDouble(),
         categoryId: json['category_id'] as int,
         categoryName: json['category']?['name'] as String?,
         imageUrl: json['image_url'] as String?,

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../commons/data/models/user.dart';
+import '../core/permissions/app_permissions.dart';
 import '../core/services/auth_service.dart';
 import '../core/local/local_storage.dart';
 import '../core/network/api_exception.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
-// TODO: supprimer ce flag quand le backend est prêt
-const bool _kDemoMode = true;
+const bool _kDemoMode = false;
 const String _kDemoEmail = 'admin@farmbridge.com';
 const String _kDemoPassword = 'demo1234';
 final User _kDemoUser = const User(
@@ -32,6 +32,7 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   bool get loading => _loading;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
+  AppPermissions get permissions => AppPermissions.from(_user);
 
   Future<void> init() async {
     if (_kDemoMode) {

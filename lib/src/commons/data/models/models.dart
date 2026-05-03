@@ -5,3 +5,5 @@ export 'farmer.dart';
 export 'transaction.dart';
 export 'repayment.dart';
 export 'app_settings.dart';
+export 'app_notification.dart';
+export 'activity_entry.dart';

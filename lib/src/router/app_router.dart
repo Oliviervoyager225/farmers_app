@@ -6,13 +6,14 @@ import '../features/home/pages/home_shell.dart';
 import '../features/farmers/pages/farmers_list_page.dart';
 import '../features/farmers/pages/farmer_create_page.dart';
 import '../features/farmers/pages/farmer_detail_page.dart';
+import '../features/farmers/pages/farmer_edit_page.dart';
 import '../features/products/pages/products_page.dart';
 import '../features/checkout/pages/checkout_page.dart';
 import '../features/checkout/pages/checkout_success_page.dart';
 import '../features/debts/pages/debts_page.dart';
 import '../features/debts/pages/repayment_page.dart';
-import '../features/dashboard/pages/dashboard_page.dart';
-import '../features/analytics/pages/analytics_page.dart';
+import '../features/transactions/pages/transactions_page.dart';
+import '../features/transactions/pages/transaction_detail_page.dart';
 
 class AppRouter {
   static GoRouter router(AuthProvider auth) => GoRouter(
@@ -24,7 +25,12 @@ class AppRouter {
 
           if (isUnknown) return null;
           if (!loggedIn && !isLogin) return '/login';
-          if (loggedIn && isLogin) return '/';
+
+          if (loggedIn) {
+            final perms = auth.permissions;
+            if (isLogin) return perms.defaultRoute;
+            if (!perms.canAccess(state.matchedLocation)) return perms.defaultRoute;
+          }
           return null;
         },
         refreshListenable: auth,
@@ -50,6 +56,14 @@ class AppRouter {
                     builder: (context, state) => FarmerDetailPage(
                       farmerId: int.parse(state.pathParameters['id']!),
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) => FarmerEditPage(
+                          farmerId: int.parse(state.pathParameters['id']!),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -58,12 +72,16 @@ class AppRouter {
                 builder: (_, __) => const ProductsPage(),
               ),
               GoRoute(
-                path: '/analytics',
-                builder: (_, __) => const AnalyticsPage(),
-              ),
-              GoRoute(
-                path: '/dashboard',
-                builder: (_, __) => const DashboardPage(),
+                path: '/transactions',
+                builder: (_, __) => const TransactionsPage(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => TransactionDetailPage(
+                      transactionId: int.parse(state.pathParameters['id']!),
+                    ),
+                  ),
+                ],
               ),
               GoRoute(
                 path: '/checkout',

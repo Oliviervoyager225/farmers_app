@@ -77,6 +77,41 @@ class FarmerProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateFarmer(int id, Map<String, dynamic> data) async {
+    _setLoading(true);
+    try {
+      final farmer = await _service.update(id, data);
+      _farmers = _farmers.map((f) => f.id == id ? farmer : f).toList();
+      if (_selected?.id == id) _selected = farmer;
+      _error = null;
+      _setLoading(false);
+      return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> deleteFarmer(int id) async {
+    _setLoading(true);
+    try {
+      await _service.delete(id);
+      _farmers = _farmers.where((f) => f.id != id).toList();
+      if (_selected?.id == id) {
+        _selected = null;
+        _debtSummary = null;
+      }
+      _error = null;
+      _setLoading(false);
+      return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      _setLoading(false);
+      return false;
+    }
+  }
+
   void clearSelection() {
     _selected = null;
     _debtSummary = null;

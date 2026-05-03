@@ -5,9 +5,11 @@ import 'src/core/services/services.dart';
 import 'src/providers/providers.dart';
 import 'src/router/app_router.dart';
 import 'src/theme/app_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('fr_FR', null);
   runApp(const FarmersApp());
 }
 
@@ -16,7 +18,6 @@ class FarmersApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Instanciation unique du client HTTP
     final apiClient = ApiClient();
 
     return MultiProvider(
@@ -31,6 +32,9 @@ class FarmersApp extends StatelessWidget {
             create: (_) => RepaymentService(apiClient)),
         Provider<SettingsService>(
             create: (_) => SettingsService(apiClient)),
+        Provider<UserService>(create: (_) => UserService(apiClient)),
+        Provider<NotificationService>(
+            create: (_) => NotificationService(apiClient)),
 
         // ── State providers ──────────────────────────────────────────────────
         ChangeNotifierProvider<AuthProvider>(
@@ -48,6 +52,22 @@ class FarmersApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (ctx) => SettingsProvider(ctx.read<SettingsService>()),
+        ),
+        ChangeNotifierProvider<TransactionProvider>(
+          create: (ctx) =>
+              TransactionProvider(ctx.read<TransactionService>()),
+        ),
+        ChangeNotifierProvider<UserProvider>(
+          create: (ctx) => UserProvider(ctx.read<UserService>()),
+        ),
+        ChangeNotifierProvider<NotificationProvider>(
+          create: (ctx) => NotificationProvider(ctx.read<NotificationService>()),
+        ),
+        ChangeNotifierProvider<ActivityProvider>(
+          create: (ctx) => ActivityProvider(
+            ctx.read<TransactionService>(),
+            ctx.read<RepaymentService>(),
+          ),
         ),
       ],
       child: const _AppWithRouter(),

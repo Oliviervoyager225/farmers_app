@@ -16,15 +16,13 @@ class AuthService {
         ApiEndpoints.login,
         data: {'email': email, 'password': password},
       );
-      final data = response.data as Map<String, dynamic>;
-      final token = data['token'] as String;
-      final user = User.fromJson(data['user'] as Map<String, dynamic>);
+      // Backend: { message, data: { user: {...}, token: "..." } }
+      final payload = response.data['data'] as Map<String, dynamic>;
+      final token = payload['token'] as String;
+      final user = User.fromJson(payload['user'] as Map<String, dynamic>);
 
       await LocalStorage.saveToken(token);
-      await LocalStorage.saveString(
-        'user_data',
-        user.toJsonString(),
-      );
+      await LocalStorage.saveString('user_data', user.toJsonString());
       return user;
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
@@ -44,7 +42,8 @@ class AuthService {
   Future<User?> getMe() async {
     try {
       final response = await _client.get(ApiEndpoints.me);
-      return User.fromJson(response.data['user'] as Map<String, dynamic>);
+      // Backend: { data: User }
+      return User.fromJson(response.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
     }

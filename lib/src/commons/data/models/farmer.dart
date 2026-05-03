@@ -1,11 +1,13 @@
 class Farmer {
   final int id;
-  final String identifier; // identifiant unique
+  final String identifier;
   final String firstName;
   final String lastName;
   final String phone;
-  final double creditLimit; // FCFA
-  final double currentDebt; // FCFA
+  final double creditLimit;
+  final double currentDebt;
+  final List<String> specialties;
+  final List<String> categories;
 
   const Farmer({
     required this.id,
@@ -15,6 +17,8 @@ class Farmer {
     required this.phone,
     required this.creditLimit,
     this.currentDebt = 0,
+    this.specialties = const [],
+    this.categories = const [],
   });
 
   String get fullName => '$firstName $lastName';
@@ -29,6 +33,12 @@ class Farmer {
         phone: json['phone'] as String,
         creditLimit: (json['credit_limit'] as num).toDouble(),
         currentDebt: (json['current_debt'] as num? ?? 0).toDouble(),
+        specialties: (json['specialties'] as List<dynamic>? ?? [])
+            .map((e) => e.toString())
+            .toList(),
+        categories: (json['categories'] as List<dynamic>? ?? [])
+            .map((e) => e.toString())
+            .toList(),
       );
 }
 

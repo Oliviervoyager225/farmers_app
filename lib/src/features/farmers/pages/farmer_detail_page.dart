@@ -5,6 +5,7 @@ import '../../../providers/farmer_provider.dart';
 import '../../../commons/widgets/widgets.dart';
 import '../../../commons/utils/currency_utils.dart';
 import '../../../commons/utils/date_utils.dart' as du;
+import '../../../commons/utils/extensions.dart';
 import '../../../theme/app_theme.dart';
 
 class FarmerDetailPage extends StatefulWidget {
@@ -23,6 +24,42 @@ class _FarmerDetailPageState extends State<FarmerDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FarmerProvider>().selectFarmer(widget.farmerId);
     });
+  }
+
+  Future<void> _confirmDelete(
+    BuildContext context,
+    FarmerProvider provider,
+    int farmerId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Supprimer l\'agriculteur'),
+        content: const Text(
+            'Cette action est irréversible. Toutes les dettes et transactions associées seront affectées.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.creditRed),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Supprimer', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      final ok = await provider.deleteFarmer(farmerId);
+      if (!mounted) return;
+      if (ok) {
+        context.showSnackSuccess('Agriculteur supprimé');
+        context.go('/farmers');
+      } else {
+        context.showSnackError(provider.error ?? 'Erreur lors de la suppression');
+      }
+    }
   }
 
   @override
@@ -52,8 +89,18 @@ class _FarmerDetailPageState extends State<FarmerDetailPage> {
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             tooltip: 'Nouvelle vente',
-            onPressed: () =>
-                context.go('/checkout?farmer_id=${farmer.id}'),
+            onPressed: () => context.go('/checkout?farmer_id=${farmer.id}'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Modifier',
+            onPressed: () => context.go('/farmers/${farmer.id}/edit'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Supprimer',
+            color: AppTheme.creditRed,
+            onPressed: () => _confirmDelete(context, provider, farmer.id),
           ),
         ],
       ),

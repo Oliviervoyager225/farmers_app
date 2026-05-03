@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../constants/app_constants.dart';
 
 class ApiClient {
-  static const String _baseUrl = 'http://YOUR_API_URL/api'; // TODO: remplacer
+  static String get _baseUrl => kIsWeb
+      ? 'http://localhost:8000/api/v1'
+      : 'http://10.0.2.2:8000/api/v1';
 
   late final Dio _dio;
   final FlutterSecureStorage _storage;

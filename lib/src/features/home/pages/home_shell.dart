@@ -3,59 +3,77 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/auth_provider.dart';
+import '../../../providers/notification_provider.dart';
 import '../../../commons/utils/responsive.dart';
+import '../../../commons/widgets/notification_panel.dart';
+import '../../../commons/widgets/cart_panel.dart';
+import '../../../providers/cart_provider.dart';
 import '../../../theme/app_theme.dart';
 
 /// Top-level shell for all authenticated routes.
 /// Desktop/LargeDesktop : sticky white top-navbar + horizontal tab strip
 /// Tablet                : slim top-navbar (no search) + scrollable tab strip
 /// Mobile                : AppBar with hamburger + Drawer for navigation
-class HomeShell extends StatelessWidget {
+class HomeShell extends StatefulWidget {
   final Widget child;
   const HomeShell({super.key, required this.child});
 
   // Tab definitions: (label, route prefix, icon)
-  static const _tabs = [
+  static const tabs = [
     ('Home', '/', Icons.home_outlined),
     ('Marketplace', '/products', Icons.storefront_outlined),
-    ('Analytics', '/analytics', Icons.bar_chart_outlined),
-    ('Dashboard', '/dashboard', Icons.dashboard_outlined),
     ('Farmers', '/farmers', Icons.people_outline),
+    ('Transactions', '/transactions', Icons.receipt_long_outlined),
+    ('Dettes', '/debts', Icons.account_balance_wallet_outlined),
   ];
 
-  int _tabIndex(String location) {
-    if (location.startsWith('/farmers')) return 4;
-    if (location.startsWith('/products')) return 1;
-    if (location.startsWith('/analytics')) return 2;
-    if (location.startsWith('/dashboard')) return 3;
+  @override
+  State<HomeShell> createState() => _HomeShellState();
+}
+
+class _HomeShellState extends State<HomeShell> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<NotificationProvider>().load();
+    });
+  }
+
+  int _tabIndexOf(String location, List<(String, String, IconData)> tabs) {
+    for (var i = 0; i < tabs.length; i++) {
+      final route = tabs[i].$2;
+      if (route == '/' ? location == '/' : location.startsWith(route)) return i;
+    }
     return 0;
   }
 
   @override
   Widget build(BuildContext context) {
+    final visibleTabs = HomeShell.tabs;
     final location = GoRouterState.of(context).matchedLocation;
-    final idx = _tabIndex(location);
+    final idx = _tabIndexOf(location, visibleTabs);
     final isMobile = Responsive.isMobile(context);
 
     if (isMobile) {
-      // â”€â”€ MOBILE: AppBar + Drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── MOBILE: AppBar + Drawer ───────────────────────────────────────────────
       return Scaffold(
         backgroundColor: AppTheme.background,
         appBar: _MobileAppBar(tabIndex: idx),
-        drawer: _NavDrawer(tabIndex: idx),
-        body: child,
+        drawer: _NavDrawer(tabIndex: idx, tabs: visibleTabs),
+        body: widget.child,
       );
     }
 
-    // â”€â”€ TABLET + DESKTOP: top-navbar + tab-strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── TABLET + DESKTOP: top-navbar + tab-strip ──────────────────────────────
     final isTablet = Responsive.isTablet(context);
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Column(
         children: [
           _TopNavBar(tabIndex: idx, compact: isTablet),
-          _TabStrip(tabIndex: idx, compact: isTablet),
-          Expanded(child: child),
+          _TabStrip(tabIndex: idx, compact: isTablet, tabs: visibleTabs),
+          Expanded(child: widget.child),
         ],
       ),
     );
@@ -105,7 +123,8 @@ class _MobileAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _NavDrawer extends StatelessWidget {
   final int tabIndex;
-  const _NavDrawer({required this.tabIndex});
+  final List<(String, String, IconData)> tabs;
+  const _NavDrawer({required this.tabIndex, required this.tabs});
 
   @override
   Widget build(BuildContext context) {
@@ -163,11 +182,11 @@ class _NavDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  for (var i = 0; i < HomeShell._tabs.length; i++)
+                  for (var i = 0; i < tabs.length; i++)
                     _DrawerItem(
-                      label: HomeShell._tabs[i].$1,
-                      icon: HomeShell._tabs[i].$3,
-                      route: HomeShell._tabs[i].$2,
+                      label: tabs[i].$1,
+                      icon: tabs[i].$3,
+                      route: tabs[i].$2,
                       active: i == tabIndex,
                     ),
                 ],
@@ -213,7 +232,7 @@ class _NavDrawer extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout,
                   size: 18, color: AppTheme.mutedFg),
-              title: const Text('DÃ©connexion',
+              title: const Text('Déconnexion',
                   style: TextStyle(fontSize: 14, color: AppTheme.foreground)),
               onTap: () => context.read<AuthProvider>().logout(),
             ),
@@ -242,7 +261,7 @@ class _DrawerItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: Material(
         color: active
-            ? AppTheme.primaryGreen.withOpacity(0.1)
+            ? AppTheme.primaryGreen.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
@@ -321,7 +340,6 @@ class _TopNavBar extends StatelessWidget {
           if (!compact) const SizedBox(width: 16),
           if (!compact) ...[
             _NavIcon(icon: Icons.language_outlined, tooltip: 'Language'),
-            _NavIcon(icon: Icons.dark_mode_outlined, tooltip: 'Dark mode'),
           ],
           _NotificationIcon(),
           _CartIcon(),
@@ -426,7 +444,8 @@ class _SearchBar extends StatelessWidget {
 class _NavIcon extends StatelessWidget {
   final IconData icon;
   final String tooltip;
-  const _NavIcon({required this.icon, required this.tooltip});
+  final VoidCallback? onTap;
+  const _NavIcon({required this.icon, required this.tooltip, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -434,7 +453,7 @@ class _NavIcon extends StatelessWidget {
       message: tooltip,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () {},
+        onTap: onTap ?? () {},
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Icon(icon, size: 20, color: AppTheme.mutedFg),
@@ -447,23 +466,38 @@ class _NavIcon extends StatelessWidget {
 class _NotificationIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final count = context.watch<NotificationProvider>().unreadCount;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
         _NavIcon(
-            icon: Icons.notifications_outlined, tooltip: 'Notifications'),
-        Positioned(
-          right: 4,
-          top: 4,
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              shape: BoxShape.circle,
+          icon: Icons.notifications_outlined,
+          tooltip: 'Notifications',
+          onTap: () => showNotificationPanel(context),
+        ),
+        if (count > 0)
+          Positioned(
+            right: 3,
+            top: 3,
+            child: Container(
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.all(Radius.circular(99)),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                count > 99 ? '99+' : '$count',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -472,31 +506,40 @@ class _NotificationIcon extends StatelessWidget {
 class _CartIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final count = context.watch<CartProvider>().itemCount;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        _NavIcon(icon: Icons.shopping_cart_outlined, tooltip: 'Cart'),
-        Positioned(
-          right: 4,
-          top: 4,
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: const BoxDecoration(
-              color: AppTheme.primaryGreen,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: const Text(
-              '3',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
+        _NavIcon(
+          icon: Icons.shopping_cart_outlined,
+          tooltip: 'Panier',
+          onTap: () => showCartPanel(context),
+        ),
+        if (count > 0)
+          Positioned(
+            right: 3,
+            top: 3,
+            child: Container(
+              constraints:
+                  const BoxConstraints(minWidth: 16, minHeight: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryGreen,
+                borderRadius:
+                    const BorderRadius.all(Radius.circular(99)),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                count > 99 ? '99+' : '$count',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -558,7 +601,7 @@ class _AvatarMenu extends StatelessWidget {
             children: const [
               Icon(Icons.logout, size: 16),
               SizedBox(width: 8),
-              Text('DÃ©connexion'),
+              Text('Déconnexion'),
             ],
           ),
         ),
@@ -577,7 +620,8 @@ class _AvatarMenu extends StatelessWidget {
 class _TabStrip extends StatelessWidget {
   final int tabIndex;
   final bool compact;
-  const _TabStrip({required this.tabIndex, this.compact = false});
+  final List<(String, String, IconData)> tabs;
+  const _TabStrip({required this.tabIndex, required this.tabs, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
@@ -594,11 +638,11 @@ class _TabStrip extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            for (var i = 0; i < HomeShell._tabs.length; i++)
+            for (var i = 0; i < tabs.length; i++)
               _TabItem(
-                label: HomeShell._tabs[i].$1,
-                icon: HomeShell._tabs[i].$3,
-                route: HomeShell._tabs[i].$2,
+                label: tabs[i].$1,
+                icon: tabs[i].$3,
+                route: tabs[i].$2,
                 active: i == tabIndex,
                 compact: compact,
               ),
