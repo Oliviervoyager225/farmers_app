@@ -4,9 +4,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../constants/app_constants.dart';
 
 class ApiClient {
-  static String get _baseUrl => kIsWeb
-      ? 'http://localhost:8000/api/v1'
-      : 'http://10.0.2.2:8000/api/v1';
+  static const String _prodUrl = 'https://farmbridge-api-d2up.onrender.com/api/v1';
+
+  static String get _baseUrl => kReleaseMode
+      ? _prodUrl
+      : (kIsWeb ? 'http://localhost:8000/api/v1' : 'http://10.0.2.2:8000/api/v1');
 
   late final Dio _dio;
   final FlutterSecureStorage _storage;
