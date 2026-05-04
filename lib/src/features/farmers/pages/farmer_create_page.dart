@@ -79,7 +79,6 @@ class _FarmerCreatePageState extends State<FarmerCreatePage> {
     if (!_formKey.currentState!.validate()) return;
     final provider = context.read<FarmerProvider>();
     final ok = await provider.createFarmer({
-      'identifier'   : _identifierCtrl.text.trim(),
       'first_name'   : _firstNameCtrl.text.trim(),
       'last_name'    : _lastNameCtrl.text.trim(),
       'phone'        : _phoneCtrl.text.trim(),
@@ -227,11 +226,9 @@ class _FarmerCreatePageState extends State<FarmerCreatePage> {
                             ),
                           ),
                           const SizedBox(height: 14),
-                          _Field(
-                            label: 'Farmer ID / Identifier *',
-                            ctrl: _identifierCtrl,
-                            hint: 'AGR-0001',
-                            validator: _required,
+                          _ReadOnlyField(
+                            label: 'Farmer ID / Identifier',
+                            value: 'Généré automatiquement (AGR-CI-XXX)',
                           ),
                           const SizedBox(height: 14),
                           _Field(
@@ -511,6 +508,46 @@ class _Row2 extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Read-only display field (greyed out, auto-generated values)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ReadOnlyField extends StatelessWidget {
+  final String label;
+  final String value;
+  const _ReadOnlyField({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 12, fontWeight: FontWeight.w600, color: _kLabel)),
+            const SizedBox(width: 5),
+            const Icon(Icons.lock_outline, size: 12, color: _kMuted),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F4F6),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: _kBorder),
+          ),
+          child: Text(value,
+              style: const TextStyle(fontSize: 13, color: _kMuted)),
+        ),
+      ],
+    );
   }
 }
 
