@@ -32,6 +32,8 @@ class FarmerProvider extends ChangeNotifier {
       _error = null;
     } on ApiException catch (e) {
       _error = e.message;
+    } catch (e) {
+      _error = e.toString();
     } finally {
       _setLoading(false);
     }

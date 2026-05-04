@@ -644,7 +644,7 @@ class _FarmerModal extends StatelessWidget {
                           ? AppTheme.creditRed
                           : AppTheme.primaryGreen,
                     ),
-                    _ModalStat(label: 'Phone', value: farmer.phone),
+                    _ModalStat(label: 'Phone', value: farmer.phone ?? '—'),
                     _ModalStat(label: 'Rating', value: '4.8 ★'),
                   ],
                 ),

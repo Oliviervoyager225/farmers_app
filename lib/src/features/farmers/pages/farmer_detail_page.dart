@@ -117,7 +117,7 @@ class _FarmerDetailPageState extends State<FarmerDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _InfoRow('Identifiant', farmer.identifier),
-                    _InfoRow('Téléphone', farmer.phone),
+                    _InfoRow('Téléphone', farmer.phone ?? '—'),
                     _InfoRow('Limite crédit',
                         CurrencyUtils.format(farmer.creditLimit)),
                     _InfoRow('Crédit disponible',

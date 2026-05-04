@@ -3,7 +3,7 @@ class Farmer {
   final String identifier;
   final String firstName;
   final String lastName;
-  final String phone;
+  final String? phone;
   final double creditLimit;
   final double currentDebt;
   final List<String> specialties;
@@ -14,7 +14,7 @@ class Farmer {
     required this.identifier,
     required this.firstName,
     required this.lastName,
-    required this.phone,
+    this.phone,
     required this.creditLimit,
     this.currentDebt = 0,
     this.specialties = const [],
@@ -30,7 +30,7 @@ class Farmer {
         identifier: json['identifier'] as String,
         firstName: json['first_name'] as String,
         lastName: json['last_name'] as String,
-        phone: json['phone'] as String,
+        phone: json['phone'] as String?,
         creditLimit: (json['credit_limit'] as num).toDouble(),
         currentDebt: (json['current_debt'] as num? ?? 0).toDouble(),
         specialties: (json['specialties'] as List<dynamic>? ?? [])

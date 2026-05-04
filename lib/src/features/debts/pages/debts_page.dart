@@ -122,7 +122,7 @@ class _DebtorTile extends StatelessWidget {
         ),
         title: Text(farmer.fullName,
             style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(farmer.phone),
+        subtitle: Text(farmer.phone ?? '—'),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
